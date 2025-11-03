@@ -1,0 +1,15 @@
+---
+- name: Robocopy a File
+  hosts: windows
+ # become: yes
+  vars:
+    src: C:\Users\Administrator\Desktop\Robocopy SRC
+    dest: C:\Users\Administrator\Desktop\Robocopy DEST
+    Log: C:\Logs\RobocopyLog.txt
+  tasks:
+    - name: Robocopy 
+      win_shell: >
+         robocopy "{{ src }}" "{{ dest }}" /E /Z /COPYALL /R:3 /W:5 /LOG:"{{ Log }}" 
+      register: robocopyresult
+      failed_when: robocopyresult.rc >=8
+  
