@@ -1,0 +1,26 @@
+---
+- name: Fetch the Server Details
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+    - block:
+        - name: Gather CPU and load facts
+          shell:  top | grep "Cpu(s)" | awk '{print 100 - $8}'
+          register: CPU
+          failed_when: CPU.stderr != ''
+   
+        - name: Print CPU
+          debug:
+            msg : "{{ CPU.stdout }}"
+
+       - name: Log success
+         lineinfile:
+         path: ~/log/ansible_cpu.log
+         line: "{{ inventory_hostname }} | Success | CPU={{ CPU.stdout }}%"
+         create: yes
+         delegate_to: localhost
+      rescue:
+        - name: Error Msg
+          debug: 
+            msg: "{{ CPU.stderr }}"
+      
